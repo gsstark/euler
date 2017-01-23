@@ -1,8 +1,6 @@
 #include <math.h>
 #include <stdio.h>
 
-#define N 13
-
 char ex_input[] = 
 	"73167176531330624919225119674426574742355349194934"
 	"96983520312774506326239578318016984801869478851843"
@@ -343,8 +341,10 @@ main(int argc, char *argv[], char *envp[]) {
 	char *input;
 	struct timespec a,b,x;
 	rettype ns;
+#if 0
 	rettype expectedmax;
 	size_t expectedmaxpos;
+#endif
 	
 
 	if (argc > 1) {
@@ -374,65 +374,58 @@ main(int argc, char *argv[], char *envp[]) {
 		input = generate(n);
 	}
 
-	printf("Solving for n=%u k=%u\n", n, k);
+	printf("n, k, algorithm, time (us)\n");
 
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &a);
 	for (int x=0;x<REPS;x++)
 		(void)solve1(input, k);
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &b);
 	ns = ((b.tv_sec-a.tv_sec)*1000000000LL + (b.tv_nsec-a.tv_nsec))/REPS;
-	printf("Solution 1: %.3fus\n", (double)ns/1000);
+	printf("%d, %d, %d, %.3f\n", n, k, 1, (double)ns/1000);
 
+#if 0
 	expectedmax = resultmax;
 	expectedmaxpos = resultmaxpos;
+#endif
+	printf("Digits: %.*s\n", k, input+resultmaxpos-k+1);
 
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &a);
 	for (int x=0;x<REPS;x++)
 		(void)solve2(input, k);
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &b);
 	ns = ((b.tv_sec-a.tv_sec)*1000000000LL + (b.tv_nsec-a.tv_nsec))/REPS;
-	printf("Solution 2: %.3fus\n", (double)ns/1000);
-
-	if (resultmax != expectedmax)
-		printf("(Incorrect max (%lld expected %lld)\n", resultmax, expectedmax);
-	if (resultmaxpos != expectedmaxpos)
-		printf("(Incorrect maxpos (%zu expected %zu)\n", resultmaxpos, expectedmaxpos);
+	printf("%d, %d, %d, %.3f\n", n, k, 2, (double)ns/1000);
+#if DEBUG
+	printf("Digits: %.*s\n", k, input+resultmaxpos-k+1);
+#endif
 
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &a);
 	for (int x=0;x<REPS;x++)
 		(void)solve3(input, k);
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &b);
 	ns = ((b.tv_sec-a.tv_sec)*1000000000LL + (b.tv_nsec-a.tv_nsec))/REPS;
-	printf("Solution 3: %.3fus\n", (double)ns/1000);
-
-	if (resultmax != expectedmax)
-		printf("(Incorrect max (%lld expected %lld)\n", resultmax, expectedmax);
-	if (resultmaxpos != expectedmaxpos)
-		printf("(Incorrect maxpos (%zu expected %zu)\n", resultmaxpos, expectedmaxpos);
-
+	printf("%d, %d, %d, %.3f\n", n, k, 3, (double)ns/1000);
+#if DEBUG
+	printf("Digits: %.*s\n", k, input+resultmaxpos-k+1);
+#endif
 
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &a);
 	for (int x=0;x<REPS;x++)
 		(void)solve4(input, k);
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &b);
 	ns = ((b.tv_sec-a.tv_sec)*1000000000LL + (b.tv_nsec-a.tv_nsec))/REPS;
-	printf("Solution 4: %.3fus\n", (double)ns/1000);
-
-	if (resultmax != expectedmax)
-		printf("(Incorrect max (%lld expected %lld)\n", resultmax, expectedmax);
-	if (resultmaxpos != expectedmaxpos)
-		printf("(Incorrect maxpos (%zu expected %zu)\n", resultmaxpos, expectedmaxpos);
+	printf("%d, %d, %d, %.3f\n", n, k, 4, (double)ns/1000);
+#if DEBUG
+	printf("Digits: %.*s\n", k, input+resultmaxpos-k+1);
+#endif
 
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &a);
 	for (int x=0;x<REPS;x++)
 		(void)solve5(input, k);
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &b);
 	ns = ((b.tv_sec-a.tv_sec)*1000000000LL + (b.tv_nsec-a.tv_nsec))/REPS;
-	printf("Solution 5: %.3fus\n", (double)ns/1000);
-
-	if (resultmax != expectedmax)
-		printf("(Incorrect max (%lld expected %lld)\n", resultmax, expectedmax);
-	if (resultmaxpos != expectedmaxpos)
-		printf("(Incorrect maxpos (%zu expected %zu)\n", resultmaxpos, expectedmaxpos);
-
+	printf("%d, %d, %d, %.3f\n", n, k, 5, (double)ns/1000);
+#if DEBUG
+	printf("Digits: %.*s\n", k, input+resultmaxpos-k+1);
+#endif
 }
