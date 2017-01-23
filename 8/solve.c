@@ -39,10 +39,8 @@ generate(size_t n) {
 	return retval;
 }
 
-/*
 typedef unsigned long long rettype;
-*/
-typedef unsigned __int128 rettype;
+/*typedef unsigned __int128 rettype;*/
 volatile rettype resultmax;
 size_t resultmaxpos;
 
@@ -202,12 +200,12 @@ solve3(char *input, int k) {
 rettype
 solve4(char *input, int k) {
 	int i,j;
-	rettype maxclz=0, max=0;
+	rettype max=0;
 	size_t maxpos=-1;
 	unsigned factors_count = F(0,0,0,0);
 
 	rettype pows[4][255];
-	rettype clzs[4][255];
+	unsigned maxclz=0, clzs[4][255];
 	for (int i=0; i<255;i++) {
 		pows[0][i] = i==0 ? 1 : pows[0][i-1]*2;
 		pows[1][i] = i==0 ? 1 : pows[1][i-1]*3;
@@ -221,13 +219,13 @@ solve4(char *input, int k) {
 
 	i=0;
 	while (input[i]) {
-		unsigned long long prodclz =
+		unsigned prodclz =
 			clzs[0][(factors_count>>24) & 0xFF] +
 			clzs[1][(factors_count>>16) & 0xFF] +
 			clzs[2][(factors_count>>8) & 0xFF] +
 			clzs[3][(factors_count) & 0xFF];
 		if (prodclz+4 > maxclz) {
-			unsigned long long prod =
+			rettype prod =
 				pows[0][(factors_count>>24) & 0xFF] *
 				pows[1][(factors_count>>16) & 0xFF] *
 				pows[2][(factors_count>>8) & 0xFF] *
