@@ -265,6 +265,71 @@ solve4(char *input, int k) {
 }
 
 
+rettype
+solve5(char *input, int k) {
+	int i,j;
+	rettype max=0;
+	size_t maxpos=-1;
+	unsigned factors_count = F(0,0,0,0), maxfactors=0;
+
+	rettype pows[4][255];
+	double maxclz=0, clzs[4][255];
+	for (int i=0; i<255;i++) {
+		pows[0][i] = i==0 ? 1 : pows[0][i-1]*2;
+		pows[1][i] = i==0 ? 1 : pows[1][i-1]*3;
+		pows[2][i] = i==0 ? 1 : pows[2][i-1]*5;
+		pows[3][i] = i==0 ? 1 : pows[3][i-1]*7;
+		clzs[0][i] = log2(pow(2,i));
+		clzs[1][i] = log2(pow(3,i));
+		clzs[2][i] = log2(pow(5,i));
+		clzs[3][i] = log2(pow(7,i));
+	}
+
+	i=0;
+	while (input[i]) {
+		double prodclz =
+			clzs[0][(factors_count>>24) & 0xFF] +
+			clzs[1][(factors_count>>16) & 0xFF] +
+			clzs[2][(factors_count>>8) & 0xFF] +
+			clzs[3][(factors_count) & 0xFF];
+		if (prodclz > maxclz) {
+			maxclz = prodclz;
+			maxpos = i-1;
+			maxfactors = factors_count;
+		}
+		if (input[i] != '0') {
+			if (i >= k-1)
+				factors_count -= factors_diff[input[i-k]-'0'];
+			factors_count += factors_diff[input[i]-'0'];
+			i++;
+		} else {
+			while (input[i] == '0') {
+				factors_count = F(0,0,0,0);
+				i++;
+				for (j=0; j<k && input[i] && input[i] != '0'; j++) {
+					factors_count += factors_diff[input[i++]-'0'];
+				}
+			}
+		}
+	}
+
+	max = (pows[0][(maxfactors>>24) & 0xFF] *
+		   pows[1][(maxfactors>>16) & 0xFF] *
+		   pows[2][(maxfactors>>8) & 0xFF] *
+		   pows[3][(maxfactors) & 0xFF]);
+
+#if 0
+	printf("Max Value %lld seen at position %zu\n", max, maxpos);
+	printf("%d", input[maxpos-k+1] - '0');
+	for (j=k-2;j>=0;j--) {
+		printf(" * %d", input[maxpos-j] - '0');
+	}
+	printf(" = %lld\n", max);
+#endif
+	resultmax = max;
+	resultmaxpos = maxpos;
+	return max;
+}
 
 
 
@@ -352,6 +417,18 @@ main(int argc, char *argv[], char *envp[]) {
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &b);
 	ns = ((b.tv_sec-a.tv_sec)*1000000000LL + (b.tv_nsec-a.tv_nsec))/REPS;
 	printf("Solution 4: %.3fus\n", (double)ns/1000);
+
+	if (resultmax != expectedmax)
+		printf("(Incorrect max (%lld expected %lld)\n", resultmax, expectedmax);
+	if (resultmaxpos != expectedmaxpos)
+		printf("(Incorrect maxpos (%zu expected %zu)\n", resultmaxpos, expectedmaxpos);
+
+	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &a);
+	for (int x=0;x<REPS;x++)
+		(void)solve5(input, k);
+	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &b);
+	ns = ((b.tv_sec-a.tv_sec)*1000000000LL + (b.tv_nsec-a.tv_nsec))/REPS;
+	printf("Solution 5: %.3fus\n", (double)ns/1000);
 
 	if (resultmax != expectedmax)
 		printf("(Incorrect max (%lld expected %lld)\n", resultmax, expectedmax);
